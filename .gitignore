@@ -1,0 +1,17 @@
+# Project exclude paths
+/.gradle/
+/Calculator/stage 1/build/
+/Calculator/stage 1/build/classes/java/main/
+/Calculator/stage 1/build/classes/java/test/
+/Calculator/stage 2/build/
+/Calculator/stage 2/build/classes/java/main/
+/Calculator/stage 2/build/classes/java/test/
+/Calculator/stage 3/build/
+/Calculator/stage 3/build/classes/java/main/
+/Calculator/stage 3/build/classes/java/test/
+/Calculator/stage 4/build/
+/Calculator/stage 4/build/classes/java/main/
+/Calculator/stage 4/build/classes/java/test/
+/Calculator/stage 5/build/
+/Calculator/stage 5/build/classes/java/main/
+/Calculator/stage 5/build/classes/java/test/
