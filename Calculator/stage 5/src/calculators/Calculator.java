@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -177,6 +178,11 @@ public class Calculator extends JFrame implements ActionListener {
         mDot.setName("Dot");
         mDel.setName("Delete");
         mClear.setName("Clear");
+        mBraces.setName("Braces");
+        mPow.setName("PowerTwo");
+        mPowY.setName("PowerY");
+        mRoot.setName("SquareRoot");
+        mPlusMinus.setName("PlusMinus");
         
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBounds(7, 170, 320, 300);
@@ -216,10 +222,10 @@ public class Calculator extends JFrame implements ActionListener {
                 ((JButton) c).setBorder(emptyBorder);
                 if (((JButton) c).getText().matches("\\d")) {
                     c.setFont(numberFont);
-                } else if (((JButton) c).getText().matches("x.")){
+                } else if (((JButton) c).getText().matches("x.")) {
                     c.setFont(italicFont);
                 } else {
-                   c.setFont(otherFont);
+                    c.setFont(otherFont);
                 }
                 
             }
@@ -322,12 +328,50 @@ public class Calculator extends JFrame implements ActionListener {
     //negate expression
     private void handleNegate () {
         
-        if (mEquationBuilder.toString().equals("")) {
-            mEquationBuilder.append("(").append(subtractSymbol);
-        } else if (mEquationBuilder.reverse().substring(0, 2).equals(subtractSymbol + "(")) {
+        if (mEquationBuilder.toString().length() >= 2 &&
+                mEquationBuilder.reverse().substring(0, 2).equals(subtractSymbol + "(")) {
             mEquationBuilder.delete(0, 2);
             mEquationBuilder.reverse();
+        } else {
+            mEquationBuilder.reverse();
+            if (mEquationBuilder.toString().matches(".+[)]")) {
+                mEquationBuilder.append(multiplySymbol).append("(").append(subtractSymbol);
+            } else if (mEquationBuilder.toString().matches("") ||
+                    mEquationBuilder.toString().matches(".+[^0-9]") || mEquationBuilder.toString()
+                                                                                       .endsWith(
+                                                                                               "(")) {
+                mEquationBuilder.append("(").append(subtractSymbol);
+            } else {
+                boolean isNegated = false;
+                int indexToBeInserted = 0;
+                int start = 0;
+                int end = 0;
+                char[] c = mEquationBuilder.toString().toCharArray();
+                for (int i = c.length - 1; i >= 0; i--) {
+                    
+                    if (String.valueOf(c[i]).matches("[^0-9]") && c[i - 1] != '(') {
+                        indexToBeInserted = i;
+                        break;
+                    }
+                    
+                    if (c[i] == '-' && c[i - 1] == '(') {
+                        isNegated = true;
+                        start = i - 1;
+                        end = i;
+                        break;
+                    }
+                }
+                
+                if (isNegated) {
+                    mEquationBuilder.delete(start, end + 1);
+                } else {
+                    mEquationBuilder.insert(indexToBeInserted,
+                                            "(" + subtractSymbol);
+                }
+            }
         }
+        
+        
     }
     
     // Insert open brace or close brace
@@ -346,7 +390,9 @@ public class Calculator extends JFrame implements ActionListener {
         }
         
         if (openBrace == closeBrace ||
-                mEquationBuilder.toString().charAt(mEquationBuilder.length() - 1) == '(') {
+                mEquationBuilder.toString().charAt(mEquationBuilder.length() - 1) == '(' ||
+                String.valueOf(mEquationBuilder.toString().charAt(mEquationBuilder.length() - 1))
+                      .matches("[" + addSymbol + multiplySymbol + divideSymbol + subtractSymbol + "]")) {
             
             if (!mEquationBuilder.toString().isEmpty()) {
                 if (String.valueOf(mEquationBuilder.charAt(mEquationBuilder.length() - 1))
@@ -386,7 +432,8 @@ public class Calculator extends JFrame implements ActionListener {
                     
                     if (bracesChar[i] == ')') {
                         indexOfFirstCloseBrace = i;
-//                        System.out.println("Step 1: (" + indexOfLastOpenBrace + " " + indexOfFirstCloseBrace + ")");
+                        System.out.println(
+                                "Step 1: (" + indexOfLastOpenBrace + " " + indexOfFirstCloseBrace + ")");
                         break;
                         
                     }
@@ -395,7 +442,7 @@ public class Calculator extends JFrame implements ActionListener {
                 
                 String bracesEqu = mResultBuilder.substring(indexOfLastOpenBrace,
                                                             indexOfFirstCloseBrace + 1);
-                //System.out.println("Step 2: Equ " + bracesEqu);
+                System.out.println("Step 2: Equ " + bracesEqu);
                 if (bracesEqu.substring(1, bracesEqu.length() - 1).matches("^-?\\d*\\.?\\d+$")) {
                     String subString = bracesEqu.substring(1, bracesEqu.length() - 1);
                     mResultBuilder.replace(indexOfLastOpenBrace, indexOfFirstCloseBrace + 1,
@@ -404,6 +451,8 @@ public class Calculator extends JFrame implements ActionListener {
                 }
                 
                 for (int j = indexOfLastOpenBrace; j < indexOfFirstCloseBrace; j++) {
+                    mIndexOfCurrentOperation = getIndexFromOperatorArray(bracesEqu);
+                    
                     boolean operatorFound = String.valueOf(bracesChar[j])
                                                   .equals(mOperationArray[mIndexOfCurrentOperation]) ||
                             String.valueOf(bracesChar[j])
@@ -411,21 +460,22 @@ public class Calculator extends JFrame implements ActionListener {
                     
                     
                     if (operatorFound) {
-                        if (j == 0) {
+                        if (j == 0 || bracesChar[j - 1] == '(') {
                             continue;
                         }
                         updateOperator(String.valueOf(bracesChar[j]));
                         String braceEquIndex = getSubStringEquation(j, mResultBuilder.toString());
                         int startIndex = Integer.parseInt(braceEquIndex.split("\\s")[0]);
                         int endIndex = Integer.parseInt(braceEquIndex.split("\\s")[1]);
-
-//                        System.out.println("Step 3: Start Index " + startIndex + " end index " + endIndex);
+                        
+                        System.out.println(
+                                "Step 3: Start Index " + startIndex + " end index " + endIndex);
                         
                         String calcResult = calculate(braceEquIndex, mResultBuilder.toString());
                         mResultBuilder.replace(startIndex, endIndex + 1, calcResult);
-//                        System.out.println("Step 4: Calc Res " + calcResult);
-
-//                        System.out.println("Step 5: Result builder " + mResultBuilder);
+                        System.out.println("Step 4: Calc Res " + calcResult);
+                        
+                        System.out.println("Step 5: Result builder " + mResultBuilder);
                         
                         break;
                     }
@@ -438,6 +488,8 @@ public class Calculator extends JFrame implements ActionListener {
                 solveEquation();
                 
             }
+            
+            mIndexOfCurrentOperation = getIndexFromOperatorArray(mResultBuilder.toString());
             
             if (!isValidEquation(mResultBuilder.toString())) {
                 updateUI(false);
@@ -652,7 +704,8 @@ public class Calculator extends JFrame implements ActionListener {
         Pattern patternNegativeRoot = Pattern.compile(rootSymbol + "-\\d+");
         Matcher matcherNegativeRoot = patternNegativeRoot.matcher(equation);
         
-        return !matcherDivideByZero.find() && !matcherNegativeRoot.find() && !endsWithOperator && equalNumOfBraces;
+        return !matcherDivideByZero.find() && !matcherNegativeRoot
+                .find() && !endsWithOperator && equalNumOfBraces;
     }
     
     private boolean checkNumOfBraces () {
@@ -683,34 +736,54 @@ public class Calculator extends JFrame implements ActionListener {
         String regex;
         
         String miniEqu = currentEquation.substring(startIndex, endIndex + 1);
+        //System.out.println(miniEqu);
         if (miniEqu.contains(rootSymbol)) {
             regex = rootSymbol;
             
             a = Double.parseDouble(miniEqu.split(regex)[1]);
         } else {
-            regex = String.format("(?<!^)[%s%s%s%s%s%s]", rootSymbol, powSymbol,
-                                  multiplySymbol, divideSymbol, addSymbol, subtractSymbol);
-            
-            a = Double.parseDouble(miniEqu.split(regex)[0]);
-            b = Double.parseDouble(miniEqu.split(regex)[1]);
+            String format = String.format("(?<!^)[%s%s%s%s%s%s]", rootSymbol, powSymbol,
+                                          multiplySymbol, divideSymbol, addSymbol, subtractSymbol);
+            Pattern pattern = Pattern.compile("[^0-9]" + subtractSymbol);
+            Matcher matcher = pattern.matcher(miniEqu);
+            if (miniEqu.startsWith(subtractSymbol)) {
+                regex = format;
+                
+                String[] split = miniEqu.split(regex);
+                a = Double.parseDouble(split[0]);
+                b = Double.parseDouble(split[1]);
+                // System.out.println(a);
+            } else if (matcher.find()) {
+                regex = format;
+                
+                String[] split = miniEqu.split(regex);
+                // System.out.println(Arrays.toString(split));
+                a = Double.parseDouble(split[0]);
+                b = Double.parseDouble(split[split.length - 1].trim());
+                b = -b;
+            } else {
+                regex = format;
+                
+                a = Double.parseDouble(miniEqu.split(regex)[0]);
+                b = Double.parseDouble(miniEqu.split(regex)[1]);
+            }
         }
 
 //        System.out.println("Regex: " + regex);
 //        System.out.println("Mini Equation: " + miniEqu);
         
-        
         switch (mOperator) {
-            case MULTIPLY:
-                result = a * b;
-                break;
             case ADD:
                 result = a + b;
+                break;
+            case SUBTRACT:
+                result = a - b;
                 break;
             case DIVIDE:
                 result = a / b;
                 break;
-            case SUBTRACT:
-                result = a - b;
+            case MULTIPLY:
+                result = a * b;
                 break;
             case POW:
                 result = Math.pow(a, b);
@@ -721,6 +794,7 @@ public class Calculator extends JFrame implements ActionListener {
             default:
                 throw new IllegalStateException("Unexpected value: " + mOperator);
         }
+        
         
         if (result % 1 == 0) {
             return String.valueOf((int) result);
@@ -752,6 +826,12 @@ public class Calculator extends JFrame implements ActionListener {
                             || characterAtCurrentIndex.equals(addSymbol)
                             || characterAtCurrentIndex.equals(subtractSymbol)
                             || characterAtCurrentIndex.equals("(");
+            
+            if (i != 0 && characterAtCurrentIndex.equals(subtractSymbol) && equation
+                    .charAt(i - 1) == '(') {
+                startIndex = 1;
+                break;
+            }
 //            System.out.println("Matches: " + matches);
             if (matches) {
                 if (i != 0 || characterAtCurrentIndex.equals("(")) {
@@ -771,7 +851,8 @@ public class Calculator extends JFrame implements ActionListener {
                             || characterAtCurrentIndex.equals(subtractSymbol)
                             || characterAtCurrentIndex.equals(")");
             if (matches) {
-                if (characterAtCurrentIndex.equals(subtractSymbol) && index == indexOfOperator + 1) {
+                if (characterAtCurrentIndex
+                        .equals(subtractSymbol) && index == indexOfOperator + 1) {
                     continue;
                 }
                 endIndex = index - 1;
