@@ -1,4 +1,4 @@
-package calculators;
+package calculator;
 
 import java.awt.*;
 

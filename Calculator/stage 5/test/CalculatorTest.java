@@ -1,4 +1,4 @@
-import calculators.Calculator;
+import calculator.Calculator;
 import org.assertj.swing.fixture.JButtonFixture;
 import org.assertj.swing.fixture.JLabelFixture;
 import org.hyperskill.hstest.dynamic.DynamicTest;
@@ -49,8 +49,8 @@ public class CalculatorTest extends SwingTest {
     private JButtonFixture mClear;
     @SwingComponent(name = "Delete")
     private JButtonFixture mDel;
-    @SwingComponent(name = "Braces")
-    private JButtonFixture mBraces;
+    @SwingComponent(name = "Parentheses")
+    private JButtonFixture mParentheses;
     @SwingComponent(name = "PowerTwo")
     private JButtonFixture mPow;
     @SwingComponent(name = "PowerY")
@@ -84,12 +84,12 @@ public class CalculatorTest extends SwingTest {
         
         requireEnabled(mEqual, mAdd, mSub, mDiv, mMult, mOne, mTwo, mThree, mFour, mFive, mSix,
                        mSeven, mEight, mNine, mZero, mDot, mClear, mDel, mPow, mPowerY,
-                       mRoot, mPlusMinus, mBraces, mEquationLabel,
+                       mRoot, mPlusMinus, mParentheses, mEquationLabel,
                        mResultLabel);
         
         requireVisible(mEqual, mAdd, mSub, mDiv, mMult, mOne, mTwo, mThree, mFour, mFive, mSix,
                        mSeven, mEight, mNine, mZero, mDot, mClear, mDel, mPow, mPowerY,
-                       mRoot, mPlusMinus, mBraces, mEquationLabel,
+                       mRoot, mPlusMinus, mParentheses, mEquationLabel,
                        mResultLabel);
         
         return correct();
@@ -263,7 +263,7 @@ public class CalculatorTest extends SwingTest {
         }
         mClear.click();
         
-        mBraces.click();
+        mParentheses.click();
         lastChar =
                 String.valueOf(
                         mEquationLabel.text().trim().charAt(mEquationLabel.text().length() - 1));
@@ -272,7 +272,7 @@ public class CalculatorTest extends SwingTest {
         }
         
         mEight.click();
-        mBraces.click();
+        mParentheses.click();
         lastChar =
                 String.valueOf(
                         mEquationLabel.text().trim().charAt(mEquationLabel.text().length() - 1));
@@ -511,7 +511,7 @@ public class CalculatorTest extends SwingTest {
         mRoot.click();
         mEight.click();
         mOne.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
         
         if (!mResultLabel.text().trim().equals("9")) {
@@ -730,7 +730,7 @@ public class CalculatorTest extends SwingTest {
         mRoot.click();
         mFour.click();
         mNine.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
         
         if (!mResultLabel.text().trim().equals("261")) {
@@ -743,7 +743,7 @@ public class CalculatorTest extends SwingTest {
         mRoot.click();
         mOne.click();
         mSix.click();
-        mBraces.click();
+        mParentheses.click();
         mAdd.click();
         mThree.click();
         mSix.click();
@@ -763,7 +763,7 @@ public class CalculatorTest extends SwingTest {
         mTwo.click();
         mSub.click();
         mTwo.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
     
         if (!mResultLabel.text().trim().equals("-4")) {
@@ -781,7 +781,7 @@ public class CalculatorTest extends SwingTest {
     @DynamicTest
     CheckResult test7() {
         
-        mBraces.click();
+        mParentheses.click();
         mTwo.click();
         mFive.click();
         mAdd.click();
@@ -792,7 +792,7 @@ public class CalculatorTest extends SwingTest {
         mEight.click();
         mMult.click();
         mEight.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
     
         if (!mResultLabel.text().trim().equals("-36")) {
@@ -806,11 +806,11 @@ public class CalculatorTest extends SwingTest {
         mMult.click();
         mSix.click();
         mAdd.click();
-        mBraces.click();
+        mParentheses.click();
         mThree.click();
         mAdd.click();
         mTwo.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
         
         if (!mResultLabel.text().trim().equals("23")) {
@@ -820,18 +820,18 @@ public class CalculatorTest extends SwingTest {
         }
         mClear.click();
         
-        mBraces.click();
+        mParentheses.click();
         mNine.click();
         mDiv.click();
         mThree.click();
-        mBraces.click();
+        mParentheses.click();
         mSub.click();
-        mBraces.click();
+        mParentheses.click();
         mOne.click();
         mSix.click();
         mDiv.click();
         mFour.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
     
         if (!mResultLabel.text().trim().equals("-1")) {
@@ -841,17 +841,17 @@ public class CalculatorTest extends SwingTest {
         }
         mClear.click();
         
-        mBraces.click();
+        mParentheses.click();
         mEight.click();
         mAdd.click();
-        mBraces.click();
+        mParentheses.click();
         mSeven.click();
         mSub.click();
         mOne.click();
         mAdd.click();
         mFive.click();
-        mBraces.click();
-        mBraces.click();
+        mParentheses.click();
+        mParentheses.click();
         mEqual.click();
     
         if (!mResultLabel.text().trim().equals("19")) {
@@ -865,25 +865,25 @@ public class CalculatorTest extends SwingTest {
         mAdd.click();
         mEight.click();
         mMult.click();
-        mBraces.click();
-        mBraces.click();
+        mParentheses.click();
+        mParentheses.click();
         mFour.click();
         mAdd.click();
         mThree.click();
-        mBraces.click();
+        mParentheses.click();
         mMult.click();
         mTwo.click();
         mAdd.click();
         mOne.click();
-        mBraces.click();
+        mParentheses.click();
         mSub.click();
         mSix.click();
         mDiv.click();
-        mBraces.click();
+        mParentheses.click();
         mTwo.click();
         mAdd.click();
         mOne.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
     
         if (!mResultLabel.text().trim().equals("121")) {
@@ -893,17 +893,17 @@ public class CalculatorTest extends SwingTest {
         }
         mClear.click();
         
-        mBraces.click();
+        mParentheses.click();
         mOne.click();
         mFive.click();
         mAdd.click();
         mOne.click();
         mFive.click();
-        mBraces.click();
+        mParentheses.click();
         mDiv.click();
         mRoot.click();
         mNine.click();
-        mBraces.click();
+        mParentheses.click();
         mEqual.click();
     
         if (!mResultLabel.text().trim().equals("10")) {
@@ -1064,8 +1064,8 @@ public class CalculatorTest extends SwingTest {
         mRoot.click();
         mPlusMinus.click();
         mNine.click();
-        mBraces.click();
-        mBraces.click();
+        mParentheses.click();
+        mParentheses.click();
         mEqual.click();
     
         mEquationLabel.foreground().requireEqualTo(Color.RED.darker());

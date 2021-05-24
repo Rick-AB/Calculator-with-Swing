@@ -1,4 +1,4 @@
-package calculators;
+package calculator;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -7,7 +7,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +39,7 @@ public class Calculator extends JFrame implements ActionListener {
     private JButton mRoot;
     private JButton mPlusMinus;
     private JButton mClearEqu;
-    private JButton mBraces;
+    private JButton mParentheses;
     private JLabel mEquationLabel;
     private JLabel mResultLabel;
     
@@ -126,7 +125,7 @@ public class Calculator extends JFrame implements ActionListener {
         mPow = new JButton("x\u00b2");
         mPowY = new JButton("x\u02b8");
         mRoot = new JButton(rootSymbol);
-        mBraces = new JButton("( )");
+        mParentheses = new JButton("( )");
         
         //Style buttons
         Border emptyBorder = BorderFactory.createEmptyBorder();
@@ -156,7 +155,7 @@ public class Calculator extends JFrame implements ActionListener {
         mClearEqu.setBackground(mLightGray);
         mPow.setBackground(mLightGray);
         mPowY.setBackground(mLightGray);
-        mBraces.setBackground(mLightGray);
+        mParentheses.setBackground(mLightGray);
         mPlusMinus.setBackground(Color.WHITE);
         emptyButton.setBackground(mBackgroundColor);
         
@@ -178,7 +177,7 @@ public class Calculator extends JFrame implements ActionListener {
         mDot.setName("Dot");
         mDel.setName("Delete");
         mClear.setName("Clear");
-        mBraces.setName("Braces");
+        mParentheses.setName("Parentheses");
         mPow.setName("PowerTwo");
         mPowY.setName("PowerY");
         mRoot.setName("SquareRoot");
@@ -190,7 +189,7 @@ public class Calculator extends JFrame implements ActionListener {
         buttonPanel.setLayout(new GridLayout(6, 4, 3, 3));
         
         
-        buttonPanel.add(mBraces);
+        buttonPanel.add(mParentheses);
         buttonPanel.add(mClearEqu);
         buttonPanel.add(mClear);
         buttonPanel.add(mDel);
@@ -292,8 +291,8 @@ public class Calculator extends JFrame implements ActionListener {
             if (!mEquationLabel.getText().isEmpty()) {
                 mEquationBuilder.deleteCharAt(mEquationBuilder.length() - 1);
             }
-        } else if (actionEvent.getSource() == mBraces) {
-            handleOpenAndCloseBrace();
+        } else if (actionEvent.getSource() == mParentheses) {
+            handleOpenAndCloseParentheses();
         } else if (actionEvent.getSource() == mPlusMinus) {
             handleNegate();
         } else if (actionEvent.getSource() == mClearEqu) {
@@ -375,21 +374,21 @@ public class Calculator extends JFrame implements ActionListener {
     }
     
     // Insert open brace or close brace
-    private void handleOpenAndCloseBrace () {
+    private void handleOpenAndCloseParentheses () {
         
-        int openBrace = 0;
-        int closeBrace = 0;
+        int openParentheses = 0;
+        int closeParentheses = 0;
         
         for (int i = 0; i < mEquationBuilder.length(); i++) {
             if (mEquationBuilder.toString().charAt(i) == '(') {
-                openBrace += 1;
+                openParentheses += 1;
             }
             if (mEquationBuilder.toString().charAt(i) == ')') {
-                closeBrace += 1;
+                closeParentheses += 1;
             }
         }
         
-        if (openBrace == closeBrace ||
+        if (openParentheses == closeParentheses ||
                 mEquationBuilder.toString().charAt(mEquationBuilder.length() - 1) == '(' ||
                 String.valueOf(mEquationBuilder.toString().charAt(mEquationBuilder.length() - 1))
                       .matches("[" + addSymbol + multiplySymbol + divideSymbol + subtractSymbol + "]")) {
@@ -405,7 +404,7 @@ public class Calculator extends JFrame implements ActionListener {
                 mEquationBuilder.append("(");
             }
             
-        } else if (closeBrace < openBrace &&
+        } else if (closeParentheses < openParentheses &&
                 mEquationBuilder.toString().charAt(mEquationBuilder.length() - 1) != '(') {
             
             mEquationBuilder.append(")");
