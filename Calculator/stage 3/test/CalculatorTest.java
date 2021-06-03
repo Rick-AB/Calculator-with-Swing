@@ -2,50 +2,56 @@ import calculator.Calculator;
 import org.assertj.swing.fixture.JButtonFixture;
 import org.assertj.swing.fixture.JLabelFixture;
 import org.hyperskill.hstest.dynamic.DynamicTest;
+import org.hyperskill.hstest.exception.outcomes.WrongAnswer;
 import org.hyperskill.hstest.stage.SwingTest;
 import org.hyperskill.hstest.testcase.CheckResult;
 import org.hyperskill.hstest.testing.swing.SwingComponent;
 
+import java.util.Map;
+
+import static java.util.Map.entry;
 import static org.hyperskill.hstest.testcase.CheckResult.correct;
 import static org.hyperskill.hstest.testcase.CheckResult.wrong;
 
 public class CalculatorTest extends SwingTest {
     
-    @SwingComponent(name = "ButtonEquals")
+    private Map<Character, JButtonFixture> charToButtonMap;
+    
+    @SwingComponent(name = "Equals")
     private JButtonFixture mEqual;
-    @SwingComponent(name = "ButtonAdd")
+    @SwingComponent(name = "Add")
     private JButtonFixture mAdd;
-    @SwingComponent(name = "ButtonSubtract")
+    @SwingComponent(name = "Subtract")
     private JButtonFixture mSub;
-    @SwingComponent(name = "ButtonDivide")
+    @SwingComponent(name = "Divide")
     private JButtonFixture mDiv;
-    @SwingComponent(name = "ButtonMultiply")
+    @SwingComponent(name = "Multiply")
     private JButtonFixture mMult;
-    @SwingComponent(name = "ButtonZero")
+    @SwingComponent(name = "Zero")
     private JButtonFixture mZero;
-    @SwingComponent(name = "ButtonOne")
+    @SwingComponent(name = "One")
     private JButtonFixture mOne;
-    @SwingComponent(name = "ButtonTwo")
+    @SwingComponent(name = "Two")
     private JButtonFixture mTwo;
-    @SwingComponent(name = "ButtonThree")
+    @SwingComponent(name = "Three")
     private JButtonFixture mThree;
-    @SwingComponent(name = "ButtonFour")
+    @SwingComponent(name = "Four")
     private JButtonFixture mFour;
-    @SwingComponent(name = "ButtonFive")
+    @SwingComponent(name = "Five")
     private JButtonFixture mFive;
-    @SwingComponent(name = "ButtonSix")
+    @SwingComponent(name = "Six")
     private JButtonFixture mSix;
-    @SwingComponent(name = "ButtonSeven")
+    @SwingComponent(name = "Seven")
     private JButtonFixture mSeven;
-    @SwingComponent(name = "ButtonEight")
+    @SwingComponent(name = "Eight")
     private JButtonFixture mEight;
-    @SwingComponent(name = "ButtonNine")
+    @SwingComponent(name = "Nine")
     private JButtonFixture mNine;
-    @SwingComponent(name = "ButtonDot")
+    @SwingComponent(name = "Dot")
     private JButtonFixture mDot;
-    @SwingComponent(name = "ButtonClear")
+    @SwingComponent(name = "Clear")
     private JButtonFixture mClear;
-    @SwingComponent(name = "ButtonDelete")
+    @SwingComponent(name = "Delete")
     private JButtonFixture mDel;
     
     @SwingComponent(name = "EquationLabel")
@@ -63,8 +69,76 @@ public class CalculatorTest extends SwingTest {
         super(new Calculator());
     }
     
+    private void typeText (String text, String expectedResult, boolean checkResult) {
+        
+        for (int i = 0; i < text.length(); i++) {
+            JButtonFixture button = charToButtonMap.get(text.charAt(i));
+            button.click();
+        }
+        if (checkResult) {
+            if (!mResultLabel.text().trim().equals(expectedResult)) {
+                throw new WrongAnswer("Result Label contains wrong number.\n" +
+                                              "    Your output: " + mResultLabel.text().trim() +
+                                              "\nExpected output: " + expectedResult);
+            }
+        } else {
+            if (!mEquationLabel.text().trim().equals(expectedResult)) {
+                throw new WrongAnswer("Equation Label contains wrong number.\n" +
+                                              "    Your output: " + mEquationLabel.text()
+                                                                                  .trim() + "\n" +
+                                              "Expected output: " + expectedResult);
+            }
+        }
+        
+        mClear.click();
+    }
+    
+    private void typeText (String text, String expectedResult, boolean checkResult,
+                           String feedBack) {
+        
+        for (int i = 0; i < text.length(); i++) {
+            JButtonFixture button = charToButtonMap.get(text.charAt(i));
+            button.click();
+        }
+        if (checkResult) {
+            if (!mResultLabel.text().trim().equals(expectedResult)) {
+                throw new WrongAnswer(feedBack + "\n" + "Your output: " + mResultLabel.text() +
+                                              "\nExpected output: " + expectedResult);
+            }
+        } else {
+            if (!mEquationLabel.text().trim().equals(expectedResult)) {
+                throw new WrongAnswer(feedBack + "\n" + "Your output: " + mEquationLabel.text() +
+                                              "\nExpected output: " + expectedResult);
+            }
+        }
+        
+        mClear.click();
+    }
+    
     @DynamicTest
     CheckResult test1 () {
+        
+        charToButtonMap = Map.ofEntries(
+                entry('0', mZero),
+                entry('1', mOne),
+                entry('2', mTwo),
+                entry('3', mThree),
+                entry('4', mFour),
+                entry('5', mFive),
+                entry('6', mSix),
+                entry('7', mSeven),
+                entry('8', mEight),
+                entry('9', mNine),
+                entry('+', mAdd),
+                entry('-', mSub),
+                entry('*', mMult),
+                entry('/', mDiv),
+                entry('=', mEqual),
+                entry('.', mDot),
+                entry('<', mDel),
+                entry('C', mClear)
+        
+        );
         
         requireEnabled(mEqual, mAdd, mSub, mDiv, mMult, mOne, mTwo, mThree, mFour, mFive, mSix,
                        mSeven, mEight, mNine, mZero, mDot, mClear, mDel, mEquationLabel,
@@ -80,30 +154,11 @@ public class CalculatorTest extends SwingTest {
     @DynamicTest()
     CheckResult test2 () {
         
-        mOne.click();
-        if (!mEquationLabel.text().trim().equals("1")) {
-            return wrong("Clicking ButtonOne adds a wrong number to the EquationLabel");
-        }
-        
-        mDel.click();
-        if (!mEquationLabel.text().trim().equals("")) {
-            return wrong("Clicking on the ButtonDelete should delete the last character from the " +
-                                 "EquationLabel");
-        }
-        
-        mOne.click();
-        mOne.click();
-        mOne.click();
-        if (!mEquationLabel.text().trim().equals("111")) {
-            return wrong("Clicking ButtonOne adds a wrong number to the EquationLabel");
-        }
-        
-        mClear.click();
-        if (!mEquationLabel.text().trim().equals("")) {
-            return wrong("Clicking on the ButtonClear should delete all the characters from the " +
-                                 "EquationLabel");
-        }
-        
+        typeText("1", "1", false);
+        typeText("1<", "", false,
+                 "Clicking on the Delete Button should delete the last character from the EquationLabel");
+        typeText("111C", "", false,
+                 "Clicking on the Clear Button should delete all the characters from the EquationLabel");
         
         return correct();
     }
@@ -112,102 +167,21 @@ public class CalculatorTest extends SwingTest {
     @DynamicTest()
     CheckResult test3 () {
         
-        mOne.click();
-        if (!mEquationLabel.text().trim().equals("1")) {
-            return wrong("Clicking ButtonOne adds a wrong number to the EquationLabel");
-        }
-        mClear.click();
-        
-        mTwo.click();
-        if (!mEquationLabel.text().trim().equals("2")) {
-            return wrong("Clicking ButtonTwo adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mThree.click();
-        if (!mEquationLabel.text().trim().equals("3")) {
-            return wrong("Clicking ButtonThree adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mFour.click();
-        if (!mEquationLabel.text().trim().equals("4")) {
-            return wrong("Clicking ButtonFour adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mFive.click();
-        if (!mEquationLabel.text().trim().equals("5")) {
-            return wrong("Clicking ButtonFive adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mSix.click();
-        if (!mEquationLabel.text().trim().equals("6")) {
-            return wrong("Clicking ButtonSix adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mSeven.click();
-        if (!mEquationLabel.text().trim().equals("7")) {
-            return wrong("Clicking ButtonSeven adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mEight.click();
-        if (!mEquationLabel.text().trim().equals("8")) {
-            return wrong("Clicking ButtonEight adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mNine.click();
-        if (!mEquationLabel.text().trim().equals("9")) {
-            return wrong("Clicking ButtonNine adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mZero.click();
-        if (!mEquationLabel.text().trim().equals("0")) {
-            return wrong("Clicking ButtonZero adds a wrong number to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mAdd.click();
-        if (!mEquationLabel.text().trim().equals("+") && !mEquationLabel.text().trim().equals(addSymbol)) {
-            return wrong("Clicking ButtonAdd adds a wrong character to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mSub.click();
-        if (!mEquationLabel.text().trim().equals("-") && !mEquationLabel.text().trim().equals(subtractSymbol)) {
-            return wrong("Clicking ButtonSubtract adds a wrong character to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mMult.click();
-        if (!mEquationLabel.text().trim().equals("x") && !mEquationLabel.text().trim().equals(multiplySymbol)) {
-            return wrong("Clicking ButtonDivide adds a wrong character to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
-        
-        mDiv.click();
-        if (!mEquationLabel.text().trim().equals("/") && !mEquationLabel.text().trim().equals(divideSymbol)) {
-            return wrong("Clicking ButtonMultiply adds a wrong character to the " +
-                                 "EquationTextField");
-        }
-        mClear.click();
+        typeText("1", "1", false);
+        typeText("2", "2", false);
+        typeText("3", "3", false);
+        typeText("4", "4", false);
+        typeText("5", "5", false);
+        typeText("6", "6", false);
+        typeText("7", "7", false);
+        typeText("8", "8", false);
+        typeText("9", "9", false);
+        typeText("0", "0", false);
+        typeText("+", "+", false);
+        typeText("-", "-", false);
+        typeText("*", multiplySymbol, false);
+        typeText("/", divideSymbol, false);
+        typeText(".", ".", false);
         
         return correct();
     }
@@ -215,98 +189,11 @@ public class CalculatorTest extends SwingTest {
     //Testing calculations
     @DynamicTest()
     CheckResult test4 () {
-        //Addition
-        mOne.click();
-        mAdd.click();
-        mOne.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("2")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 2");
-        }
-        mClear.click();
-        
-        mNine.click();
-        mAdd.click();
-        mOne.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("10")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 10");
-        }
-        mClear.click();
-        
-        //Subtraction
-        mOne.click();
-        mSub.click();
-        mNine.click();
-        mNine.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("-98")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected -98");
-        }
-        mClear.click();
-        
-        mNine.click();
-        mZero.click();
-        mSub.click();
-        mThree.click();
-        mSix.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("54")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 54");
-        }
-        mClear.click();
-        
-        //Division
-        mNine.click();
-        mDiv.click();
-        mTwo.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("4.5")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 4.5");
-        }
-        mClear.click();
-        
-        mZero.click();
-        mDiv.click();
-        mSeven.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("0")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 0");
-        }
-        mClear.click();
-        
-        //Multiplication
-        mFour.click();
-        mDot.click();
-        mFive.click();
-        mMult.click();
-        mTwo.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("9")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 9");
-        }
-        mClear.click();
+       typeText("9+1=", "10", true);
+       typeText("1-99=", "-98", true);
+       typeText("9/2=", "4.5", true);
+       typeText("0/7=", "0", true);
+       typeText("4.5*2=", "9", true);
         
         return correct();
     }
@@ -315,275 +202,19 @@ public class CalculatorTest extends SwingTest {
     @DynamicTest()
     CheckResult test5 () {
         //Add & Subtract
-        mTwo.click();
-        mAdd.click();
-        mFive.click();
-        mSub.click();
-        mThree.click();
-        mEqual.click();
+        typeText("11-5+4=", "10", true);
+        typeText("2-17+5=", "-10", true);
         
-        if (!mResultLabel.text().trim().equals("4")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 4");
-        }
-        mClear.click();
-        
-        mOne.click();
-        mOne.click();
-        mSub.click();
-        mFive.click();
-        mAdd.click();
-        mFour.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("10")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 10");
-        }
-        mClear.click();
-        
-        mThree.click();
-        mAdd.click();
-        mTwo.click();
-        mSub.click();
-        mSeven.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("-2")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected -2");
-        }
-        mClear.click();
-        
-        mTwo.click();
-        mSub.click();
-        mOne.click();
-        mSeven.click();
-        mAdd.click();
-        mFive.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("-10")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected -10");
-        }
-        mClear.click();
         
         //Multiply & Divide
-        mFour.click();
-        mMult.click();
-        mFive.click();
-        mDiv.click();
-        mOne.click();
-        mZero.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("2")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 2");
-        }
-        mClear.click();
-        
-        mNine.click();
-        mDiv.click();
-        mTwo.click();
-        mMult.click();
-        mEight.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("36")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 36");
-        }
-        mClear.click();
+        typeText("9/2*8=", "36", true);
         
         //Combined
-        mTwo.click();
-        mAdd.click();
-        mThree.click();
-        mSub.click();
-        mFive.click();
-        mMult.click();
-        mSix.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("-25")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected -25");
-        }
-        mClear.click();
-        
-        mTwo.click();
-        mSub.click();
-        mThree.click();
-        mAdd.click();
-        mFive.click();
-        mMult.click();
-        mSix.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("29")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 29");
-        }
-        mClear.click();
-        
-        mOne.click();
-        mSix.click();
-        mAdd.click();
-        mNine.click();
-        mSub.click();
-        mSeven.click();
-        mDiv.click();
-        mFive.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("23.6")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 23.6");
-        }
-        mClear.click();
-        
-        mOne.click();
-        mSix.click();
-        mSub.click();
-        mNine.click();
-        mAdd.click();
-        mSeven.click();
-        mDiv.click();
-        mFive.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("8.4")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 8.4");
-        }
-        mClear.click();
-        
-        mTwo.click();
-        mFive.click();
-        mAdd.click();
-        mNine.click();
-        mDiv.click();
-        mThree.click();
-        mSub.click();
-        mEight.click();
-        mMult.click();
-        mEight.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("-36")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected -36");
-        }
-        mClear.click();
-        
-        mTwo.click();
-        mFive.click();
-        mAdd.click();
-        mNine.click();
-        mMult.click();
-        mThree.click();
-        mSub.click();
-        mEight.click();
-        mDiv.click();
-        mEight.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("51")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 51");
-        }
-        mClear.click();
-        
-        mNine.click();
-        mDiv.click();
-        mThree.click();
-        mMult.click();
-        mSix.click();
-        mDiv.click();
-        mTwo.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("9")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 9");
-        }
-        mClear.click();
-        
-        mNine.click();
-        mMult.click();
-        mThree.click();
-        mDiv.click();
-        mSix.click();
-        mMult.click();
-        mTwo.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("9")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 9");
-        }
-        mClear.click();
-        
-        mThree.click();
-        mDot.click();
-        mEight.click();
-        mMult.click();
-        mSeven.click();
-        mDot.click();
-        mFive.click();
-        mDiv.click();
-        mTwo.click();
-        mDot.click();
-        mFive.click();
-        mMult.click();
-        mFive.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("57")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 57");
-        }
-        mClear.click();
-        
-        mNine.click();
-        mDot.click();
-        mTwo.click();
-        mDiv.click();
-        mTwo.click();
-        mDot.click();
-        mThree.click();
-        mMult.click();
-        mOne.click();
-        mTwo.click();
-        mDiv.click();
-        mTwo.click();
-        mDot.click();
-        mFour.click();
-        mEqual.click();
-        
-        if (!mResultLabel.text().trim().equals("20")) {
-            return wrong(
-                    "The calculation result your app shows is wrong. " + mEquationLabel.text() +
-                            ". Expected 20");
-        }
-        mClear.click();
+        typeText("2+3-5*6=", "-25", true);
+        typeText("16+9-7/5=", "23.6", true);
+        typeText("25+9/3-8*8=", "-36", true);
+        typeText("3.8*7.5/2.5*5=", "57", true);
+        typeText("9.2/2.3*12/2.4=", "20", true);
         
         return correct();
     }

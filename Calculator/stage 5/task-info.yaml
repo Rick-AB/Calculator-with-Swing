@@ -2,3 +2,7 @@ type: edu
 files:
 - name: test/CalculatorTest.java
   visible: false
+- name: src/calculator/Calculator.java
+  visible: true
+- name: src/calculator/Main.java
+  visible: true

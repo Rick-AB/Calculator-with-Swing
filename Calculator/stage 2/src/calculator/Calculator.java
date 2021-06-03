@@ -86,21 +86,21 @@ public class Calculator extends JFrame implements ActionListener {
         mEquals.setBounds(180, 310, 50, 40);
         mSub.setBounds(250, 310, 50, 40);
 
-        mEquals.setName("ButtonEquals");
-        mAdd.setName("ButtonAdd");
-        mSub.setName("ButtonSubtract");
-        mDiv.setName("ButtonDivide");
-        mMult.setName("ButtonMultiply");
-        mZero.setName("ButtonZero");
-        mOne.setName("ButtonOne");
-        mTwo.setName("ButtonTwo");
-        mThree.setName("ButtonThree");
-        mFour.setName("ButtonFour");
-        mFive.setName("ButtonFive");
-        mSix.setName("ButtonSix");
-        mSeven.setName("ButtonSeven");
-        mEight.setName("ButtonEight");
-        mNine.setName("ButtonNine");
+        mEquals.setName("Equals");
+        mAdd.setName("Add");
+        mSub.setName("Subtract");
+        mDiv.setName("Divide");
+        mMult.setName("Multiply");
+        mZero.setName("Zero");
+        mOne.setName("One");
+        mTwo.setName("Two");
+        mThree.setName("Three");
+        mFour.setName("Four");
+        mFive.setName("Five");
+        mSix.setName("Six");
+        mSeven.setName("Seven");
+        mEight.setName("Eight");
+        mNine.setName("Nine");
 
         add(mAdd);
         add(mSub);
@@ -184,6 +184,6 @@ public class Calculator extends JFrame implements ActionListener {
         
         
 
-        mEquationTextField.setText(mEquationTextField.getText().concat(" = " + (int) result));
+        mEquationTextField.setText(mEquationTextField.getText().concat("=" + (int) result));
     }
 }

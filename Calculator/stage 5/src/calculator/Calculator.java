@@ -49,7 +49,7 @@ public class Calculator extends JFrame implements ActionListener {
     
     private Operator mOperator;
     private final String powSymbol = "^";
-    private final String rootSymbol = "\u221A";
+    private final String rootSymbol = "\u221A\u221A";
     private final String plusMinusSymbol = "\u00b1";
     private final String divideSymbol = "\u00F7";
     private final String multiplySymbol = "\u00D7";
@@ -431,8 +431,6 @@ public class Calculator extends JFrame implements ActionListener {
                     
                     if (bracesChar[i] == ')') {
                         indexOfFirstCloseBrace = i;
-                        System.out.println(
-                                "Step 1: (" + indexOfLastOpenBrace + " " + indexOfFirstCloseBrace + ")");
                         break;
                         
                     }
@@ -441,7 +439,7 @@ public class Calculator extends JFrame implements ActionListener {
                 
                 String bracesEqu = mResultBuilder.substring(indexOfLastOpenBrace,
                                                             indexOfFirstCloseBrace + 1);
-                System.out.println("Step 2: Equ " + bracesEqu);
+                
                 if (bracesEqu.substring(1, bracesEqu.length() - 1).matches("^-?\\d*\\.?\\d+$")) {
                     String subString = bracesEqu.substring(1, bracesEqu.length() - 1);
                     mResultBuilder.replace(indexOfLastOpenBrace, indexOfFirstCloseBrace + 1,
@@ -467,14 +465,11 @@ public class Calculator extends JFrame implements ActionListener {
                         int startIndex = Integer.parseInt(braceEquIndex.split("\\s")[0]);
                         int endIndex = Integer.parseInt(braceEquIndex.split("\\s")[1]);
                         
-                        System.out.println(
-                                "Step 3: Start Index " + startIndex + " end index " + endIndex);
-                        
                         String calcResult = calculate(braceEquIndex, mResultBuilder.toString());
                         mResultBuilder.replace(startIndex, endIndex + 1, calcResult);
-                        System.out.println("Step 4: Calc Res " + calcResult);
                         
-                        System.out.println("Step 5: Result builder " + mResultBuilder);
+                        
+                        
                         
                         break;
                     }
@@ -735,7 +730,7 @@ public class Calculator extends JFrame implements ActionListener {
         String regex;
         
         String miniEqu = currentEquation.substring(startIndex, endIndex + 1);
-        //System.out.println(miniEqu);
+        //
         if (miniEqu.contains(rootSymbol)) {
             regex = rootSymbol;
             
@@ -751,12 +746,12 @@ public class Calculator extends JFrame implements ActionListener {
                 String[] split = miniEqu.split(regex);
                 a = Double.parseDouble(split[0]);
                 b = Double.parseDouble(split[1]);
-                // System.out.println(a);
+                //
             } else if (matcher.find()) {
                 regex = format;
                 
                 String[] split = miniEqu.split(regex);
-                // System.out.println(Arrays.toString(split));
+                //
                 a = Double.parseDouble(split[0]);
                 b = Double.parseDouble(split[split.length - 1].trim());
                 b = -b;
@@ -768,8 +763,8 @@ public class Calculator extends JFrame implements ActionListener {
             }
         }
 
-//        System.out.println("Regex: " + regex);
-//        System.out.println("Mini Equation: " + miniEqu);
+//
+//
         
         switch (mOperator) {
             case ADD:
@@ -811,8 +806,8 @@ public class Calculator extends JFrame implements ActionListener {
         String leftSideOfOperator = equation.substring(0, indexOfOperator);
         String rightSideOfOperator = equation.substring(indexOfOperator + 1);
 
-//        System.out.println("Left side: " + leftSideOfOperator);
-//        System.out.println("Right side: " + rightSideOfOperator);
+//
+//
         
         int startIndex = 0;
         int endIndex = equation.length() - 1;
@@ -831,7 +826,7 @@ public class Calculator extends JFrame implements ActionListener {
                 startIndex = 1;
                 break;
             }
-//            System.out.println("Matches: " + matches);
+//
             if (matches) {
                 if (i != 0 || characterAtCurrentIndex.equals("(")) {
                     startIndex = i + 1;
